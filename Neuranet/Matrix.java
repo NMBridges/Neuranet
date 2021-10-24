@@ -183,8 +183,6 @@ public class Matrix {
         return productMatrix;
     }
 
-    
-
     /**
      * Raises the entries of the a matrix to a given power.
      * @param a The matrix.
