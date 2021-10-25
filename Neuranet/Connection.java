@@ -78,7 +78,7 @@ public class Connection {
     }
 
     /**
-     * Puts a matrix through an activation function (ReLU).
+     * Puts a matrix through an activation function (sigmoid).
      * @param input
      * @return
      */
@@ -89,7 +89,11 @@ public class Connection {
         Matrix activatedMatrix = new Matrix(new double[rowCount][columnCount]);
         for (int row = 0; row < rowCount; row += 1) {
             for (int col = 0; col < columnCount; col += 1) {
-                activatedMatrix.set(row, col, Math.max(0.0, input.get(row, col)));
+                /** ------- ReLU ------- */
+                // activatedMatrix.set(row, col, Math.max(0.0, input.get(row, col)));
+                
+                /** ------ Sigmoid ----- */
+                activatedMatrix.set(row, col, 1.0 / (1.0 + Math.exp(-input.get(row, col))));
             }
         }
         return activatedMatrix;
