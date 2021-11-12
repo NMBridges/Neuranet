@@ -1,6 +1,11 @@
 import Neuranet.Matrix;
 import Neuranet.NeuralNetwork;
+
+import java.io.FileNotFoundException;
+
+import Neuranet.Activation;
 import Neuranet.Dataset;
+import Neuranet.DatasetParser;
 
 public class Driver {
 
@@ -26,11 +31,22 @@ public class Driver {
         Matrix mat1 = new Matrix(values1);
         Matrix mat2 = new Matrix(values2);
 
-        NeuralNetwork net = new NeuralNetwork(new int[]{3, 5, 3}, new Dataset[]{ new Dataset(mat1, mat2) });
-        
-        Matrix avgCost = net.compute();
+        NeuralNetwork net = new NeuralNetwork(new int[]{3, 3, 3, 3}, Activation.SIGMOID);
+        Dataset[] datasets = new Dataset[0];
+        try {
+            datasets = DatasetParser.parse("datasets.txt");
+        } catch (FileNotFoundException fnfe) {
+            System.out.println(fnfe.getMessage());
+        }
         print(net);
-        print(avgCost);
 
+        print("Average loss: " + net.getAverageLoss( datasets ));
+        net.learn(datasets);
+        print("Average loss after learning: " + net.getAverageLoss(datasets));
+
+        Dataset exDataset = datasets[0];
+        System.out.println("After Training:\n\nInput:" + exDataset.getInput());
+        System.out.println("Output:" + net.compute(exDataset.getInput()));
+        System.out.println("Expected Output:" + exDataset.getExpectedOutput());
     }
 }
