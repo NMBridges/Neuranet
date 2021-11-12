@@ -5,7 +5,7 @@ import java.util.Arrays;
 import Neuranet.RuntimeExceptions.InvalidMatrixOperation;
 
 /**
- * Class that represents a neural network.
+ * Class that represents a convolutional neural network.
  * @author Nolan Bridges
  * @version 1.0.0
  */
@@ -214,7 +214,7 @@ public class NeuralNetwork {
      * @param datasets the datasets used to teach the model.
      */
     public void learn(Dataset[] datasets) {
-        learn(datasets, 1, 1);
+        learn(datasets, 1, 1, 1.0);
     }
 
     /**
@@ -231,7 +231,7 @@ public class NeuralNetwork {
      *                  gradients and updating the model's weights
      *                  and biases.
      */
-    public void learn(Dataset[] datasets, int cycles, int batchSize) {
+    public void learn(Dataset[] datasets, int cycles, int batchSize, double learningRate) {
         for (int cycle = 0; cycle < cycles; cycle += 1) {
             for (int batchStartIndex = 0; batchStartIndex < datasets.length; batchStartIndex += batchSize) {
                 Dataset[] batch = Arrays.copyOfRange(datasets, batchStartIndex, Math.min(datasets.length, batchStartIndex + batchSize));
@@ -251,7 +251,6 @@ public class NeuralNetwork {
                 }
         
                 /** Modifies the weights and biases by the calculated gradients. */
-                double learningRate = 1.0;
                 for (int index = 0; index < weights.length; index += 1) { 
                     weights[index] = Matrix.subtract(weights[index], Matrix.multiply(totalWeightGradients[index], learningRate));
                 }

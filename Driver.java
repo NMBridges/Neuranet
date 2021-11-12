@@ -25,18 +25,18 @@ public class Driver {
         try {
             datasets = DatasetParser.parse("datasets3.txt");
         } catch (FileNotFoundException fnfe) {
-            System.out.println(fnfe.getMessage());
+            print(fnfe.getMessage());
         }
         print(net);
 
         print("Average loss: " + net.getAverageLoss( datasets ));
-        net.learn(datasets, 15, 1);
+        net.learn(datasets, 15, 1, 5.0);
         print("Average loss after learning: " + net.getAverageLoss(datasets));
 
         try {
             datasets = DatasetParser.parse("datasets3test.txt");
         } catch (FileNotFoundException fnfe) {
-            System.out.println(fnfe.getMessage());
+            print(fnfe.getMessage());
         }
 
         int correct = 0;
@@ -47,14 +47,14 @@ public class Driver {
             if (guess == answer) {
                 correct += 1;
             } else {
-                System.out.println("\nInput:" + exDataset.getInput());
-                System.out.println("Output:" + net.compute(exDataset.getInput()));
-                System.out.println("Expected Output:" + exDataset.getExpectedOutput());
+                print("\nInput:" + exDataset.getInput());
+                print("Output:" + net.compute(exDataset.getInput()));
+                print("Expected Output:" + exDataset.getExpectedOutput());
             }
         }
 
-        System.out.println("Accuracy: " + (100 * correct / datasets.length) + "%");
+        print("Accuracy: " + (100 * correct / datasets.length) + "%");
 
-        System.out.println(net);
+        print(net);
     }
 }
