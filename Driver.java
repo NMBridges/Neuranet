@@ -19,20 +19,8 @@ public class Driver {
     }
 
     public static void main(String[] args) {
-        double[][] values1 = new double[][] {
-            {  4.0  },
-            {  2.0  },
-            { -1.0  }
-        };
-        double[][] values2 = new double[][] {
-            {  0.0  },
-            {  0.0  },
-            {  0.0  }
-        };
-        Matrix mat1 = new Matrix(values1);
-        Matrix mat2 = new Matrix(values2);
 
-        NeuralNetwork net = new NeuralNetwork(new int[]{3, 15, 3}, Activation.SIGMOID);
+        NeuralNetwork net = new NeuralNetwork(new int[]{3, 3}, Activation.SIGMOID);
         Dataset[] datasets = new Dataset[0];
         try {
             datasets = DatasetParser.parse("datasets3.txt");
@@ -42,11 +30,7 @@ public class Driver {
         print(net);
 
         print("Average loss: " + net.getAverageLoss( datasets ));
-        for (int iteration = 0; iteration < 20; iteration += 1) {
-            for (int i = 0; i < datasets.length; i += 6) {
-                net.learn(Arrays.copyOfRange(datasets, i, i + 6));
-            }
-        }
+        net.learn(datasets, 15, 1);
         print("Average loss after learning: " + net.getAverageLoss(datasets));
 
         try {

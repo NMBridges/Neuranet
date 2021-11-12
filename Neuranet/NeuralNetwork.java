@@ -1,5 +1,8 @@
 package Neuranet;
 
+import java.beans.beancontext.BeanContextMembershipListener;
+import java.util.Arrays;
+
 import Neuranet.RuntimeExceptions.InvalidMatrixOperation;
 
 /**
@@ -61,7 +64,7 @@ public class NeuralNetwork {
      * @param output The model's predicted output based on the inputs.
      * @return The loss of the weights and biases.
      */
-    public static double loss(Matrix expectedOutput, Matrix output) throws InvalidMatrixOperation {
+    private static double loss(Matrix expectedOutput, Matrix output) throws InvalidMatrixOperation {
         return Matrix.sumEntries(Matrix.pow(Matrix.subtract(expectedOutput, output), 2.0)) / output.getRowCount();
     }
 
@@ -103,7 +106,7 @@ public class NeuralNetwork {
      * @return An array of matrices containing the layers'
      * values.
      */
-    public Matrix[] getZvalues(Matrix input) throws InvalidMatrixOperation {
+    private Matrix[] getZvalues(Matrix input) throws InvalidMatrixOperation {
         /**
          * Array of combined mx1 matrices where the first column is the
          * unactivated value at the layer.
@@ -127,7 +130,7 @@ public class NeuralNetwork {
      * @param in the input to sigmoid-ify.
      * @return the sigmoid-ified double.
      */
-    public static double sigmoid(double in) {
+    private static double sigmoid(double in) {
         return 1.0 / (1.0 + Math.exp(-in));
     }
 
@@ -137,7 +140,7 @@ public class NeuralNetwork {
      * @param in the double to linearify.
      * @return the output of the ReLU function.
      */
-    public static double reLU(double in) {
+    private static double reLU(double in) {
         return Math.max(0.0, in);
     }
 
@@ -146,7 +149,7 @@ public class NeuralNetwork {
      * @param input the matrix to 'activate'.
      * @return the activated matrix.
      */
-    public Matrix activate(Matrix input) {
+    private Matrix activate(Matrix input) {
         int rowCount = input.getRowCount();
         int columnCount = input.getColumnCount();
 
@@ -181,7 +184,7 @@ public class NeuralNetwork {
      * @param input the matrix at to find the derivative of the 'activate' function.
      * @return the derivative matrix of the activation function.
      */
-    public Matrix activateDerivative(Matrix input) {
+    private Matrix activateDerivative(Matrix input) {
         int rowCount = input.getRowCount();
         int columnCount = input.getColumnCount();
 
@@ -206,31 +209,57 @@ public class NeuralNetwork {
     /**
      * Given a set of Datasets, it takes the average
      * gradient learned from the model and adjusts the
-     * weights and biases accordingly.
+     * weights and biases accordingly. It defaults to
+     * one cycle of training and a batch size of one
+     * dataset before updating the weights and biases.
      * @param datasets the datasets used to teach the model.
      */
     public void learn(Dataset[] datasets) {
-        Matrix[] totalWeightGradients = Matrix.multiply(weights, 0.0);
-        Matrix[] totalBiasGradients = Matrix.multiply(biases, 0.0);
-        
-        /** Averages the gradients of the weights and biases for all datasets. */
-        for (Dataset dataset : datasets) {
-            Tuple<Matrix[], Matrix[]> gradients = learn(dataset);
-            totalWeightGradients = Matrix.add(totalWeightGradients, gradients.f);
-            totalBiasGradients = Matrix.add(totalBiasGradients, gradients.s);
-        }
-        for (int index = 0; index < totalWeightGradients.length; index += 1) {
-            totalWeightGradients[index] = Matrix.divide(totalWeightGradients[index], datasets.length);
-            totalBiasGradients[index] = Matrix.divide(totalBiasGradients[index], datasets.length);
-        }
+        learn(datasets, 1, 1);
+    }
 
-        /** Modifies the weights and biases by the calculated gradients. */
-        double learningRate = 1.0;
-        for (int index = 0; index < weights.length; index += 1) { 
-            weights[index] = Matrix.subtract(weights[index], Matrix.multiply(totalWeightGradients[index], learningRate));
-        }
-        for (int index = 0; index < biases.length; index += 1) { 
-            biases[index] = Matrix.subtract(biases[index], Matrix.multiply(totalBiasGradients[index], learningRate));
+    /**
+     * Loops through an array of Datasets, taking 'batchSize'
+     * Datasets at a time and averaging the gradients for the
+     * weights and biases over these 'batchSize' datasets, adjusting the
+     * weights and biases accordingly. It repeats this process
+     * 'cycles' times.
+     * @param datasets the Datasets used to teach the model.
+     * @param cycles the amount of times to run the training datasets.
+     * @param batchSize the size of each batch to train the model.
+     *                  In other words, the number of datasets to
+     *                  go through each time before averaging their
+     *                  gradients and updating the model's weights
+     *                  and biases.
+     */
+    public void learn(Dataset[] datasets, int cycles, int batchSize) {
+        for (int cycle = 0; cycle < cycles; cycle += 1) {
+            for (int batchStartIndex = 0; batchStartIndex < datasets.length; batchStartIndex += batchSize) {
+                Dataset[] batch = Arrays.copyOfRange(datasets, batchStartIndex, Math.min(datasets.length, batchStartIndex + batchSize));
+
+                Matrix[] totalWeightGradients = Matrix.multiply(weights, 0.0);
+                Matrix[] totalBiasGradients = Matrix.multiply(biases, 0.0);
+                
+                /** Averages the gradients of the weights and biases for all datasets. */
+                for (Dataset dataset : batch) {
+                    Tuple<Matrix[], Matrix[]> gradients = datasetGradients(dataset);
+                    totalWeightGradients = Matrix.add(totalWeightGradients, gradients.f);
+                    totalBiasGradients = Matrix.add(totalBiasGradients, gradients.s);
+                }
+                for (int index = 0; index < totalWeightGradients.length; index += 1) {
+                    totalWeightGradients[index] = Matrix.divide(totalWeightGradients[index], batch.length);
+                    totalBiasGradients[index] = Matrix.divide(totalBiasGradients[index], batch.length);
+                }
+        
+                /** Modifies the weights and biases by the calculated gradients. */
+                double learningRate = 1.0;
+                for (int index = 0; index < weights.length; index += 1) { 
+                    weights[index] = Matrix.subtract(weights[index], Matrix.multiply(totalWeightGradients[index], learningRate));
+                }
+                for (int index = 0; index < biases.length; index += 1) { 
+                    biases[index] = Matrix.subtract(biases[index], Matrix.multiply(totalBiasGradients[index], learningRate));
+                }
+            }
         }
     }
 
@@ -241,7 +270,7 @@ public class NeuralNetwork {
      * @param dataset The Dataset to compute and learn from.
      * @return the weight and bias gradients learned from the dataset.
      */
-    public Tuple<Matrix[], Matrix[]> learn(Dataset dataset) {
+    public Tuple<Matrix[], Matrix[]> datasetGradients(Dataset dataset) {
         Matrix input = dataset.getInput();
         Matrix expectedOutput = dataset.getExpectedOutput();
         
@@ -249,7 +278,7 @@ public class NeuralNetwork {
         Matrix[] nodeValues = getZvalues(input); 
         
         /** Backpropagates given the node values and expected output. */
-        return getGradients(nodeValues, expectedOutput);
+        return backpropagate(nodeValues, expectedOutput);
     }
 
     /**
@@ -265,7 +294,7 @@ public class NeuralNetwork {
      * @return the weight and bias gradients learned
      *         from the dataset.
      */
-    public Tuple<Matrix[], Matrix[]> getGradients(Matrix[] zValues, Matrix expectedOutput) {
+    private Tuple<Matrix[], Matrix[]> backpropagate(Matrix[] zValues, Matrix expectedOutput) {
         /** The output of the input with the current weights and biases. */
         Matrix output = activate(zValues[zValues.length - 1]);
         /** Gradient of loss with respect to the last layer. */
