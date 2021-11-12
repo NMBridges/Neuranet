@@ -2,6 +2,7 @@ import Neuranet.Matrix;
 import Neuranet.NeuralNetwork;
 
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 import Neuranet.Activation;
 import Neuranet.Dataset;
@@ -31,22 +32,45 @@ public class Driver {
         Matrix mat1 = new Matrix(values1);
         Matrix mat2 = new Matrix(values2);
 
-        NeuralNetwork net = new NeuralNetwork(new int[]{3, 3, 3, 3}, Activation.SIGMOID);
+        NeuralNetwork net = new NeuralNetwork(new int[]{3, 15, 3}, Activation.SIGMOID);
         Dataset[] datasets = new Dataset[0];
         try {
-            datasets = DatasetParser.parse("datasets.txt");
+            datasets = DatasetParser.parse("datasets3.txt");
         } catch (FileNotFoundException fnfe) {
             System.out.println(fnfe.getMessage());
         }
         print(net);
 
         print("Average loss: " + net.getAverageLoss( datasets ));
-        net.learn(datasets);
+        for (int iteration = 0; iteration < 20; iteration += 1) {
+            for (int i = 0; i < datasets.length; i += 6) {
+                net.learn(Arrays.copyOfRange(datasets, i, i + 6));
+            }
+        }
         print("Average loss after learning: " + net.getAverageLoss(datasets));
 
-        Dataset exDataset = datasets[0];
-        System.out.println("After Training:\n\nInput:" + exDataset.getInput());
-        System.out.println("Output:" + net.compute(exDataset.getInput()));
-        System.out.println("Expected Output:" + exDataset.getExpectedOutput());
+        try {
+            datasets = DatasetParser.parse("datasets3test.txt");
+        } catch (FileNotFoundException fnfe) {
+            System.out.println(fnfe.getMessage());
+        }
+
+        int correct = 0;
+        for (Dataset dataset : datasets) {
+            Dataset exDataset = dataset;
+            int guess = Matrix.getIndexOfMax(net.compute(exDataset.getInput())).f;
+            int answer = Matrix.getIndexOfMax(exDataset.getExpectedOutput()).f;
+            if (guess == answer) {
+                correct += 1;
+            } else {
+                System.out.println("\nInput:" + exDataset.getInput());
+                System.out.println("Output:" + net.compute(exDataset.getInput()));
+                System.out.println("Expected Output:" + exDataset.getExpectedOutput());
+            }
+        }
+
+        System.out.println("Accuracy: " + (100 * correct / datasets.length) + "%");
+
+        System.out.println(net);
     }
 }

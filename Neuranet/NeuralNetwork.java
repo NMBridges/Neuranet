@@ -43,7 +43,11 @@ public class NeuralNetwork {
         weights = new Matrix[nodeCounts.length - 1];
         biases = new Matrix[nodeCounts.length - 1];
         for (int index = 0; index < weights.length; index++) {
-            weights[index] = Matrix.random(nodeCounts[index + 1], nodeCounts[index], -1.0, 1.0);
+            if (activationType == Activation.RELU) {
+                weights[index] = Matrix.random(nodeCounts[index + 1], nodeCounts[index], 0.001, 1.0);
+            } else {
+                weights[index] = Matrix.random(nodeCounts[index + 1], nodeCounts[index], -1.0, 1.0);
+            }
             biases[index] = Matrix.random(nodeCounts[index + 1], 1, 0.0, 0.0);
         }
         this.activationType = activationType;
@@ -221,7 +225,7 @@ public class NeuralNetwork {
         }
 
         /** Modifies the weights and biases by the calculated gradients. */
-        double learningRate = 0.1;
+        double learningRate = 1.0;
         for (int index = 0; index < weights.length; index += 1) { 
             weights[index] = Matrix.subtract(weights[index], Matrix.multiply(totalWeightGradients[index], learningRate));
         }
@@ -262,49 +266,55 @@ public class NeuralNetwork {
      *         from the dataset.
      */
     public Tuple<Matrix[], Matrix[]> getGradients(Matrix[] zValues, Matrix expectedOutput) {
+        /** The output of the input with the current weights and biases. */
         Matrix output = activate(zValues[zValues.length - 1]);
-        Matrix dCda_l = Matrix.subtract(expectedOutput, output);
+        /** Gradient of loss with respect to the last layer. */
+        Matrix dCda_l = Matrix.subtract(output, expectedOutput);
         
+        /**
+         * The new gradients to modify the weights and biases with
+         * based on the error of this dataset.
+         */
         Matrix[] weightGradients = new Matrix[weights.length];
         Matrix[] biasGradients = new Matrix[biases.length];
         
+        /** The cost at layer l. */
         Matrix sigma_l = new Matrix();
 
         for (int layer = weights.length - 1; layer >= 0; layer -= 1) {
+            /** Unactivated node values (z) at layer l. */
             Matrix z_l = zValues[layer + 1];
-            Matrix a_l = activate(z_l);
-
+            /** Unactivated node values (z) at layer l-1. */
             Matrix z_lminusOne = zValues[layer];
+            /** Activated node values (a) at layer l-1. */
             Matrix a_lminusOne = activate(z_lminusOne);
-            
+            /** The derivative of the activation function at layer l. */
             Matrix sigma_lprime = activateDerivative(z_l);
             
+            /** Recalculates the cost at the current layer. */
             if (layer == weights.length - 1) {
                 sigma_l = Matrix.hadamardMultiply(dCda_l, sigma_lprime);
             } else {
                 sigma_l = Matrix.hadamardMultiply(Matrix.multiply(Matrix.transpose(weights[layer + 1]), sigma_l), sigma_lprime);
             }
 
+            /**
+             * Adjusts the weight and bias gradients based on the error
+             * at the current layer.
+             */
             weightGradients[layer] = Matrix.multiply(sigma_l, Matrix.transpose(a_lminusOne));
             biasGradients[layer] = new Matrix(sigma_l);
         }
 
+        /** Returns the gradients of the weights and biases. */
         return new Tuple<>(weightGradients, biasGradients);
     }
 
     /**
      * Returns the state of the Network as a readable String.
      */
+    @Override
     public String toString() {
-        String out = stringifyNeuralNetwork();
-        return out;
-    }
-
-    /**
-     * Converts the state of the Network to a readable String.
-     * @return the state of the Network to a readable String.
-     */
-    public String stringifyNeuralNetwork() {
         String out = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Neural Network  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 
         if(weights != null && weights.length > 0) {
