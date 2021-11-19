@@ -1,6 +1,7 @@
 package Neuranet.RuntimeExceptions;
 
 import Neuranet.Matrix;
+import Neuranet.Matrix2D;
 
 /**
  * Class representing matrix index out of bounds error.
@@ -13,7 +14,7 @@ public class InvalidMatrixIndex extends RuntimeException {
     /**
      * Constructs an InvalidMatrixIndex object.
      */
-    public InvalidMatrixIndex(Matrix a, int row, int col) {
-        super("Invalid matrix entry index [" + row + ", " + col + "]. Valid indices for given matrix are: [0 <= row < " + a.getRowCount() + ", 0 <= column < " + a.getColumnCount() + "].");
+    public InvalidMatrixIndex(Matrix a, int...dims) {
+        super("Invalid matrix entry index [" + dims[0] + ", " + dims[1] + (dims.length > 2 ? ", " + dims[2] : "") + "] for matrix of dimensions (not indexes) " + a.getDimensions() + ".");
     }
 }

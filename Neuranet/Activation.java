@@ -8,5 +8,6 @@ package Neuranet;
  */
 public enum Activation {
     SIGMOID,
-    RELU
+    RELU,
+    RELU_NORMALIZED
 }

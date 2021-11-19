@@ -42,8 +42,8 @@ public class DatasetParser {
             String[] inputs = line.split("\\|")[0].trim().split(" ");
             String[] outputs = line.split("\\|")[1].trim().split(" ");
 
-            Matrix input = new Matrix(inputs.length, 1);
-            Matrix output = new Matrix(outputs.length, 1);
+            Matrix2D input = new Matrix2D(inputs.length, 1);
+            Matrix2D output = new Matrix2D(outputs.length, 1);
 
             for (int index = 0; index < inputs.length; index += 1) {
                 input.set(index, 0, Double.parseDouble(inputs[index]));
@@ -60,5 +60,17 @@ public class DatasetParser {
         reader.close();
         Dataset[] out = new Dataset[datasets.size()];
         return datasets.toArray(out);
+    }
+
+    /**
+     * Writes a list of datasets to the given file path.
+     * @param fileName the file path to write the dataset to.
+     * @param inputs the inputs to write to the file.
+     * @param outputs the expected outputs to write to the file.
+     * @throws FileNotFoundException returned if the file is not valid.
+     * @throws InvalidDatasetFormat returned if the dataset format in the file is invalid.
+     */
+    public static void write(String fileName, Matrix2D[] inputs, Matrix2D[] outputs) throws FileNotFoundException, InvalidDatasetFormat {
+
     }
 }

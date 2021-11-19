@@ -8,16 +8,16 @@ package Neuranet;
  */
 public class Dataset {
     /** The input of the neural network entry. */
-    private Matrix input;
+    private Matrix2D input;
     /** The expected output of the neural network entry. */
-    private Matrix expectedOutput;
+    private Matrix2D expectedOutput;
 
     /**
      * No-arg constructor that creates an empty dataset.
      */
     public Dataset() {
-        input = new Matrix();
-        expectedOutput = new Matrix();
+        input = new Matrix2D();
+        expectedOutput = new Matrix2D();
     }
 
     /**
@@ -26,9 +26,9 @@ public class Dataset {
      * @param input The input of the dataset.
      * @param expectedOutput The expected output of the dataset.
      */
-    public Dataset(Matrix input, Matrix expectedOutput) {
-        this.input = new Matrix(input);
-        this.expectedOutput = new Matrix(expectedOutput);
+    public Dataset(Matrix2D input, Matrix2D expectedOutput) {
+        this.input = new Matrix2D(input);
+        this.expectedOutput = new Matrix2D(expectedOutput);
     }
 
     /**
@@ -43,14 +43,14 @@ public class Dataset {
      * Returns the input of the dataset.
      * @return the input of the dataset.
      */
-    public Matrix getInput() {
+    public Matrix2D getInput() {
         return input;
     }
 
     /**
      * Sets the input of the dataset to the specified value.
      */
-    public void setInput(Matrix input) {
+    public void setInput(Matrix2D input) {
         this.input = input;
     }
 
@@ -58,14 +58,14 @@ public class Dataset {
      * Returns the expected output of the dataset.
      * @return the expected output of the dataset.
      */
-    public Matrix getExpectedOutput() {
+    public Matrix2D getExpectedOutput() {
         return expectedOutput;
     }
 
     /**
      * Sets the expected output of the dataset to the specified value.
      */
-    public void setExpectedOutput(Matrix expectedOutput) {
+    public void setExpectedOutput(Matrix2D expectedOutput) {
         this.expectedOutput = expectedOutput;
     }
 

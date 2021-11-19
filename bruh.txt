@@ -1,0 +1,1 @@
+[mxm grid] -> [m-2 x m]

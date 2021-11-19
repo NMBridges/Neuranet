@@ -14,7 +14,7 @@ public class InvalidMatrixOperation extends RuntimeException {
      * Constructs an InvalidMatrixOperation object.
      */
     public InvalidMatrixOperation(Matrix a, Matrix b, String operation) {
-        super("Matrices of dimension " + a.getRowCount() + "x" + a.getColumnCount() + " and "
-            + b.getRowCount() + "x" + b.getColumnCount() + " do not have compatible dimensions for " + operation + ".");
+        super("Matrices of dimension " + a.getDimensions() + " and "
+            + b.getDimensions() + " do not have compatible dimensions for " + operation + ".");
     }
 }
