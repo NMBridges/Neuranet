@@ -15,7 +15,7 @@ import Neuranet.RuntimeExceptions.InvalidMatrixOperation;
  * @version 1.0.0
  */
 public class NeuralNetwork implements Network {
-    /** The the weights of the neural network. */
+    /** The weights of the neural network. */
     private Matrix2D[] weights;
     /** The biases of the neural network. */
     private Matrix2D[] biases;
@@ -51,10 +51,10 @@ public class NeuralNetwork implements Network {
         weights = new Matrix2D[nodeCounts.length - 1];
         biases = new Matrix2D[nodeCounts.length - 1];
         for (int index = 0; index < weights.length; index++) {
-            if (activationType == Activation.RELU) {
-                weights[index] = Matrix2D.random(nodeCounts[index + 1], nodeCounts[index], 0.001, 1.0);
-            } else {
+            if (activationType == Activation.SIGMOID) {
                 weights[index] = Matrix2D.random(nodeCounts[index + 1], nodeCounts[index], -1.0, 1.0);
+            } else {
+                weights[index] = Matrix2D.random(nodeCounts[index + 1], nodeCounts[index], 0.001, 1.0);
             }
             biases[index] = Matrix2D.random(nodeCounts[index + 1], 1, 0.0, 0.0);
         }
@@ -70,7 +70,7 @@ public class NeuralNetwork implements Network {
             return 0.0;
         }
         double loss = 0.0;
-        for (int index = 0; index < datasets.length; index++) {
+        for (int index = 0; index < datasets.length; index += 1) {
             loss += Network.loss(datasets[index].getExpectedOutput(), compute(datasets[index].getInput()));
         }
         return loss / datasets.length;

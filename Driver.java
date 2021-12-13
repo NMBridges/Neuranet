@@ -24,7 +24,9 @@ public class Driver {
     }
 
     public static void main(String[] args) {
-        /**
+        
+        long startTime = System.nanoTime();
+
         NeuralNetwork net = new NeuralNetwork(new int[]{3, 3}, Activation.SIGMOID);
         print(net);
         
@@ -63,51 +65,83 @@ public class Driver {
 
         print(net);
 
-        try {
-            double[] imgData = ImageData.parseImageGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02.jpg", 400, 200);
-            ImageData.writeGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02-Scaled.png", imgData, 400, 200);
+        System.out.println("Time: " +  (0.000000001 * (System.nanoTime() - startTime)) + " seconds.");
+
+        /*try {
+            Matrix3D imgData = ImageData.parseImageGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02.jpg", 400, 200);
+            ImageData.writeGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02-Scaled.png", imgData);
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }*/
 
-        Matrix3D input = new Matrix3D();
+        /*Matrix3D input = new Matrix3D();
         try {
-            input = ImageData.parseImageGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02.jpg", 100, 100);
+            input = ImageData.parseImageGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\HandOutOfWater.png", 100, 100);
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }
 
         Convolution[] cons = new Convolution[] {
-            new Convolution(3, new int[]{3, 3, 1}, 1, 1, Activation.SIGMOID, 4, 4, Pooling.AVERAGE)
+            new Convolution(1, new int[]{3, 3, 1}, 1, 1, Activation.SIGMOID, 1, 1, Pooling.AVERAGE)
         };
 
-        Matrix3D weight = new Matrix3D(new double[][][] {
+        Matrix3D weight0 = new Matrix3D(new double[][][] {
             {
-                { -1.0 },
-                { -1.0 },
-                { -1.0 }
+                { -1.0 }, { -2.0 }, {  -1.0 }
             },
             {
-                { -1.0 },
-                {  5.0 },
-                { -1.0 }
+                {  0.0 }, {  0.0 }, {  0.0 }
             },
             {
-                { -1.0 },
-                { -1.0 },
-                { -1.0 }
+                {  1.0 }, {  2.0 }, {  1.0 }
             },
         });
-        //cons[0].setWeight(0, weight);
+
+        Matrix3D weight1 = new Matrix3D(new double[][][] {
+            {
+                { -1.0 }, {  0.0 }, {  1.0 }
+            },
+            {
+                { -2.0 }, {  0.0 }, {  2.0 }
+            },
+            {
+                { -1.0 }, {  0.0 }, {  1.0 }
+            },
+        });
+        cons[0].setWeight(0, weight0);
+        //cons[0].setWeight(1, weight1);
         ConvolutionalNeuralNetwork cnn = new ConvolutionalNeuralNetwork(cons);
 
         Matrix3D output = cnn.compute(input);
-        print(Matrix3D.flatten(output));
+        //print(Matrix3D.flatten(output));
         
         try {
-            ImageData.writeRGB("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02-EEEE.jpg", output);
+            ImageData.writeGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\HandOutOfWater-Filtered.png", output.getLayers()[0]);
+            //ImageData.writeGrayscale("C:\\Users\\scrat\\Pictures\\Saved Pictures\\LowPolyEye-02-Verti.jpg", output.getLayers()[1]);
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
+        }*/
+
+        /*try {
+            System.out.println("INITIAL RANDOM: " + Matrix2D.random(5, 3, 0.4, 0.6));
+
+            Matrix2D total = new Matrix2D(5, 3);
+            int iterations = 5000000;
+            for (int c = 0; c < iterations; c += 1)
+            {
+                total = Matrix2D.add(total, Matrix2D.random(5, 3, 0.4, 0.6));
+            }
+
+            System.out.println("Average: " + Matrix2D.divide(total, iterations));
+
+            Matrix2D percError = Matrix2D.divide(Matrix2D.abs(Matrix2D.subtract(Matrix2D.random(5, 3, 0.5, 0.5), Matrix2D.divide(total, iterations))), 0.1);
+            System.out.println("% Error: " + percError);
+
+            System.out.println("Time: " +  (0.000000001 * (System.nanoTime() - startTime)) + " seconds.");
         }
+        catch (Exception e)
+        {
+            System.out.println("Exception");
+        }*/
     }
 }

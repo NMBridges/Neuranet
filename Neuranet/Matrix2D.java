@@ -502,9 +502,7 @@ public class Matrix2D extends Matrix {
      * @return
      */
     public static Matrix2D minor(Matrix2D a, int row, int column) throws InvalidMatrixOperation {
-        if (a.getColumnCount() != a.getRowCount()) {
-            throw new InvalidMatrixOperation(a, a, "calculating the minor");
-        } else if (a.getColumnCount() == 1) {
+        if (a.getColumnCount() == 1) {
             return a;
         } else {
             Matrix2D minor = new Matrix2D(a.getRowCount() - 1, a.getColumnCount() - 1);

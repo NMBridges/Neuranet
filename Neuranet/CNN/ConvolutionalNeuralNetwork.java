@@ -63,6 +63,8 @@ public class ConvolutionalNeuralNetwork implements Network {
         int filteredRows = (input.getRowCount() - filterSize + 2 * padding) / filterStride + 1;
         int filteredCols = (input.getColumnCount() - filterSize + 2 * padding) / filterStride + 1;
         int filteredLays = weights.length;
+
+        System.out.print("Filtering...");
         
         Matrix3D filtered = new Matrix3D(filteredRows, filteredCols, filteredLays);
         for (int layer = 0; layer < filteredLays; layer++) {
@@ -81,11 +83,15 @@ public class ConvolutionalNeuralNetwork implements Network {
                     double z = dot + biases[layer];
                     
                     filtered.set(row, col, layer, z);
+
+                    System.out.print("\rFiltering: " + ((int) Math.round((col + row * filteredCols + layer * filteredCols * filteredRows + 1) * 10000.0 / (filteredRows * filteredCols * filteredLays)) / 100.0) + "%");
                 }
             }
             /** Activates the layer. */
-            filtered.setLayer(layer, Network.activate(Matrix3D.getLayers(filtered)[layer], activationType));
+            filtered.setLayer(layer, Network.activate(filtered.getLayers()[layer], activationType));
         }
+
+        System.out.print("\nPooling...");
 
         int poolSize = convolution.getPoolSize();
         int poolStride = convolution.getPoolStride();
@@ -101,7 +107,7 @@ public class ConvolutionalNeuralNetwork implements Network {
                     /** Takes a subsection of the original input. */
                     int inputRow = row * poolStride;
                     int inputCol = col * poolStride;
-                    Matrix3D filteredSection = Matrix3D.subMatrix(Matrix3D.getLayers(filtered)[layer], inputRow, inputCol, 0, inputRow + poolSize, inputCol + poolSize, 1);
+                    Matrix3D filteredSection = Matrix3D.subMatrix(filtered.getLayers()[layer], inputRow, inputCol, 0, inputRow + poolSize, inputCol + poolSize, 1);
 
                     switch (convolution.getPoolingType()) {
                         case MAX:
@@ -114,9 +120,13 @@ public class ConvolutionalNeuralNetwork implements Network {
                         default:
                             pooled.set(row, col, layer, Matrix3D.sumEntries(filteredSection) / (poolSize * poolSize));
                     }
+
+                    System.out.print("\rPooling: " + ((int) Math.round((col + row * pooledCols + layer * pooledCols * pooledRows + 1) * 10000.0 / (pooledRows * pooledCols * filteredLays)) / 100.0) + "%");
                 }
             }
         }
+
+        System.out.println("");
         
         return pooled;
     }

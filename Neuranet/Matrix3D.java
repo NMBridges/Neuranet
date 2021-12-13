@@ -307,17 +307,16 @@ public class Matrix3D extends Matrix {
     /**
      * Splits a matrix into an array of matrices
      * of its rows.
-     * @param a the matrix to split.
      * @return the array of single-rowed matrices.
      */
-    public static Matrix3D[] getRows(Matrix3D a) {
-        Matrix3D[] out = new Matrix3D[a.getRowCount()];
-        for (int index = 0; index < a.getRowCount(); index += 1) {
-            out[index] = new Matrix3D(1, a.getColumnCount(), a.getLayerCount());
+    public Matrix3D[] getRows() {
+        Matrix3D[] out = new Matrix3D[getRowCount()];
+        for (int index = 0; index < getRowCount(); index += 1) {
+            out[index] = new Matrix3D(1, getColumnCount(), getLayerCount());
             
-            for (int col = 0; col < a.getColumnCount(); col += 1) {
-                for (int lay = 0; lay < a.getLayerCount(); lay += 1) {
-                    out[index].set(0, col, lay, a.get(index, col, lay));
+            for (int col = 0; col < getColumnCount(); col += 1) {
+                for (int lay = 0; lay < getLayerCount(); lay += 1) {
+                    out[index].set(0, col, lay, get(index, col, lay));
                 }
             }
         }
@@ -327,17 +326,16 @@ public class Matrix3D extends Matrix {
     /**
      * Splits a matrix into an array of matrices
      * of its columns.
-     * @param a the matrix to split.
      * @return the array of single-columned matrices.
      */
-    public static Matrix3D[] getColumns(Matrix3D a) {
-        Matrix3D[] out = new Matrix3D[a.getColumnCount()];
-        for (int index = 0; index < a.getColumnCount(); index += 1) {
-            out[index] = new Matrix3D(a.getRowCount(), 1, a.getLayerCount());
+    public Matrix3D[] getColumns() {
+        Matrix3D[] out = new Matrix3D[getColumnCount()];
+        for (int index = 0; index < getColumnCount(); index += 1) {
+            out[index] = new Matrix3D(getRowCount(), 1, getLayerCount());
             
-            for (int row = 0; row < a.getRowCount(); row += 1) {
-                for (int lay = 0; lay < a.getLayerCount(); lay += 1) {
-                    out[index].set(row, 0, lay, a.get(row, index, lay));
+            for (int row = 0; row < getRowCount(); row += 1) {
+                for (int lay = 0; lay < getLayerCount(); lay += 1) {
+                    out[index].set(row, 0, lay, get(row, index, lay));
                 }
             }
         }
@@ -347,17 +345,16 @@ public class Matrix3D extends Matrix {
     /**
      * Splits a matrix into an array of matrices
      * of its layers.
-     * @param a the matrix to split.
      * @return the array of single-layered matrices.
      */
-    public static Matrix3D[] getLayers(Matrix3D a) {
-        Matrix3D[] out = new Matrix3D[a.getLayerCount()];
-        for (int index = 0; index < a.getLayerCount(); index += 1) {
-            out[index] = new Matrix3D(a.getRowCount(), a.getColumnCount(), 1);
+    public Matrix3D[] getLayers() {
+        Matrix3D[] out = new Matrix3D[getLayerCount()];
+        for (int index = 0; index < getLayerCount(); index += 1) {
+            out[index] = new Matrix3D(getRowCount(), getColumnCount(), 1);
 
-            for (int row = 0; row < a.getRowCount(); row += 1) {
-                for (int col = 0; col < a.getColumnCount(); col += 1) {
-                    out[index].set(row, col, 0, a.get(row, col, index));
+            for (int row = 0; row < getRowCount(); row += 1) {
+                for (int col = 0; col < getColumnCount(); col += 1) {
+                    out[index].set(row, col, 0, get(row, col, index));
                 }
             }
         }
@@ -717,7 +714,7 @@ public class Matrix3D extends Matrix {
     @Override
     public String toString() {
         String out = "\n[";
-        Matrix3D[] layers = Matrix3D.getLayers(this);
+        Matrix3D[] layers = getLayers();
         for (int index = 0; index < layers.length; index++) {
             out += Matrix3D.to2D(layers[index]);
             if (index < layers.length - 1) {
