@@ -27,22 +27,22 @@ public class Driver {
         
         long startTime = System.nanoTime();
 
-        NeuralNetwork net = new NeuralNetwork(new int[]{3, 3}, Activation.SIGMOID);
+        NeuralNetwork net = new NeuralNetwork(new int[]{3, 15, 15, 3}, Activation.SIGMOID);
         print(net);
         
         Dataset[] datasets = new Dataset[0];
         try {
-            datasets = DatasetParser.parse("datasets3.txt");
+            datasets = DatasetParser.parse("datasets1.txt");
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }
 
         print("Average loss: " + net.getAverageLoss( datasets ));
-        net.learn(datasets, 15, 1, 3.0);
+        net.learn(datasets, 15000, 1, 1.0);
         print("Average loss after learning: " + net.getAverageLoss(datasets));
 
         try {
-            datasets = DatasetParser.parse("datasets3test.txt");
+            datasets = DatasetParser.parse("datasets1test.txt");
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }
