@@ -32,17 +32,23 @@ public class Driver {
         
         Dataset[] datasets = new Dataset[0];
         try {
-            datasets = DatasetParser.parse("datasets1.txt");
+            datasets = DatasetParser.parse("datasets3.txt");
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }
 
+        for (int index = 0; index < datasets.length; index += 1) {
+            double maxVal = datasets[index].getInput().get(Matrix2D.getIndexOfMax(datasets[index].getInput()).x, Matrix2D.getIndexOfMax(datasets[index].getInput()).y);
+            //datasets[index].setInput(Matrix2D.divide(datasets[index].getInput(), maxVal));
+            //print(datasets[index].getInput());
+        }
+
         print("Average loss: " + net.getAverageLoss( datasets ));
-        net.learn(datasets, 15000, 1, 1.0);
+        net.learn(datasets, 1500, 10, 1.0);
         print("Average loss after learning: " + net.getAverageLoss(datasets));
 
         try {
-            datasets = DatasetParser.parse("datasets1test.txt");
+            datasets = DatasetParser.parse("datasets3test.txt");
         } catch (FileNotFoundException fnfe) {
             print(fnfe.getMessage());
         }
